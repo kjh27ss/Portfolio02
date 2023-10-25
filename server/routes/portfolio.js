@@ -11,7 +11,8 @@ router.route('/list')
             let show = '';
             show = req.query.show;
             let maxNum = 0;
-            const row = await Portfolio.find({});         
+            const row = await Portfolio.find({}).populate("category"); // 외래키 join
+            // console.log(row);
             const rs = await Category.find().sort({'num':"desc"}); // asc,desc
             if(rs.length>0) maxNum = rs[0].num;
             res.render('portfolio', { row, rs, maxNum, title:"나의 포트폴리오" ,show:show});
@@ -31,37 +32,96 @@ router.route('/write')
             next(err);
         }
     })
-    .post( upload.single("img"), async (req, res, next)=>{
+    .post( upload.array("img"), async (req, res, next)=>{
         try{
-            fs.moveSync('./img/'+req.file.filename, './img/portfolio/'+req.file.filename);
-            var fileupload = '';
-            if(req.file) {
+            let fileupload = '';
+            for(let i=0; i<req.files.length; i++){
+                fs.moveSync('./img/'+req.files[i].filename, './img/portfolio/'+req.files[i].filename);  
+            }                        
+            if(req.files) {
                fileupload = {
-                  orimg: req.file.originalname,
-                  img: req.file.filename
-               }
-            }  
-            // const addCategory = await Category.create({
-            //     name:req.body.category,
-            // });
-
-            const data = {
-               category : req.body.category,
-               title : req.body.title,
-               content:req.body.content,
-               link : req.body.link, 
+                    orimg:req.files.map(file => file.originalname),
+                    img:req.files.map(file => file.filename)
+               }                
             }
-            const datas = {...data, ...fileupload}
-            const portfolio = await Portfolio.create(datas);
+
+            const portfolio = await Portfolio.create({
+                ...fileupload,
+                category:req.body.category,
+                title : req.body.title,
+                content:req.body.content,
+                link : req.body.link
+            });
 
             console.log(portfolio);
-            res.redirect('/portfolio/list');
+            return res.redirect('/portfolio/list');
 
          }catch(err){
             console.error(err);
-            next(err);
+            return next(err);
          }
      });
+
+router.route('/edit/:id')     
+     .get(async (request,result,next)=>{
+        try{
+            const id = request.params.id;
+            const row = await Portfolio.find({_id:id});
+            const res = row[0];
+            result.render("portfolio_update", {res,title:"포트폴리오 수정"});
+        }catch(err){
+            console.log(err);
+            next(err);
+        }
+     })
+
+router.route('/edit')
+     .post( upload.single("img"), async(req, res, next)=>{
+        // const { title,content, id } = req.body;
+        // console.log(title,content, id);       
+
+        try{      
+            // const {id} = req.params;
+           let fileupload = {};
+           if(req.body.imgchk == 1){
+              //기존의 파일을 삭제
+              fs.removeSync('./img/portfolio/'+req.body.imgname);
+              //새로 업로드된 파일 이동
+              fs.moveSync('./img/'+req.files[i].filename, './img/portfolio/'+req.files[i].filename);
+              //새로운 파일을 등록
+              fileupload = {
+                 orimg:req.files.map(file => file.originalname),
+                 img:req.files.map(file => file.filename)
+              }
+           }
+           const portfo = {
+              title: req.body.title,
+              content:req.body.content
+           } 
+           const portfolio = await Portfolio.updateOne({_id : req.body.id}, {
+              ...portfo,
+              ...fileupload
+           });
+           console.log(portfolio);
+           res.redirect("/portfolio/list");
+        }catch(err){
+           console.error(err);
+           next(err);
+        }
+     });            
+
+router.route('/del/:id')
+     .get(async(req, res, next)=>{
+           try{
+              const  {id } = req.params;
+              const row = await Portfolio.deleteOne({_id: id});
+              const rs = row[0];
+              res.render('portfolio', { rs });
+              }catch(err){
+                 console.error(err);
+                 next(err);
+              }
+           });     
 
 router.route('/category/write')    
     .post(async (req,res,next)=>{

@@ -94,7 +94,7 @@ router.route('/edit')
 router.route('/del/:id')
 .get(async(req, res, next)=>{
       try{
-         const  {id } = req.params;
+         const { id } = req.params;
          const row = await Skills.deleteOne({_id: id});
          const rs = row[0];
          res.render('skills', { rs });

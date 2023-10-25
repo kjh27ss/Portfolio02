@@ -15,7 +15,7 @@
             </h1>
             <form name="form" id="form" 
                       method="post" 
-                      action="/portfolio/write"
+                      action="/portfolio/edit"
                       enctype="multipart/form-data"
             >
             <!-- loop -->
@@ -26,10 +26,10 @@
                       <label class="d-block my-2 mx-1">
                         카테고리
                       </label>
-                      <select class="form-control" name="category">
+                      <select class="form-control" id="select-category" name="category">
                         <option value="">선택하세요.</option>                       
-                        {% for rs in row %}
-                         <option value="{{rs.id}}">{{rs.name}}</option>
+                        {% for row in rs %}
+                         <option value="{{row.id}}">{{row.name}}</option>
                         {% endfor %}
                       </select>
                     </div>                  
@@ -38,7 +38,7 @@
                       <label class="d-block my-2 mx-1">
                         링크
                       </label>
-                      <input type="text" name="link" id="link" class="form-control">
+                      <input type="text" name="link" id="link" class="form-control" value="{{res.link}}">
                     </div>
                   </div>
                 </li>
@@ -49,7 +49,7 @@
                       <label class="d-block mx-1 my-2">
                         포트폴리오 제목
                       </label>
-                      <input type="text" name="title" id="title" class="form-control" value="{{rs.title}}"/>
+                      <input type="text" name="title" id="title" class="form-control" value="{{res.title}}"/>
                     </div>
                   </div>
                 </li>
@@ -60,7 +60,7 @@
                         <label class="d-block mx-1 my-2">
                           포트폴리오 설명
                         </label>
-                        <textarea name="content" id="content" class="form-control" value="{{rs.content}}" ></textarea>
+                        <textarea name="content" id="content" class="form-control">{{res.content}}</textarea>
                       </div>
                     </div>
                   </li>
@@ -75,12 +75,27 @@
                           <button type="button" class="btn btn-danger" id="delFile">폼 제거</button>
                         </div>
                         <div class="col-12 img mt-3" id="myfiles">
-                          <input type="file" name="img" class="form-control mb-3"/>
+                          {% for img in res.orimg %}
+                            <div class="d-flex align-items-center border-bottom">
+                              <div class="col-2">
+                                <label for="">
+                                  <input type="checkbox" value="ok" name="imgok" class="imgok">
+                                  이미지 업데이트
+                                </label>
+                              </div>
+                              <div class="col-3 imgtxt">
+                                {{img}}
+                              </div>
+                              <div class="col-7">
+                                <input type="file" name="img" class="newimg form-control mb-3"/>
+                              </div>
+                            </div>
+                          {% endfor %}
                         </div>
                     </div>
-                  </li>
-                
+                  </li>                
                 </ul>
+
                 <div class="btn-box d-flex justify-content-center my-5">
                   <button type="reset" class="btn btn-warning mx-5 px-5">취소</button>
                   <button type="submit" class="btn btn-primary mx-5 px-5">전송</button>
@@ -89,6 +104,42 @@
         </div>
                 
    <script>
+
+    //selected
+    function selectControl(str){
+      const el = document.getElementById("select-category"); // select box
+      const maxOpt = el.options.length;
+      for(let i = 0; i<maxOpt; i++){
+        if(el.options[i].value == str){
+          el.options[i].selected = true;
+        }
+      }
+    }
+    selectControl("{{res.category._id}}");
+
+
+    // 이미지 삭제 , 보관 event
+    const checkboxes = document.querySelectorAll(".imgok");
+    const newImgs = document.querySelectorAll(".newimg");
+
+    checkboxes.forEach((checkbox, index)=>{
+      let imgTxt = document.getElementsByClassName("imgtxt")[index];
+      let myTxt = imgTxt.textContent; // 이미지 경로 글씨
+      checkbox.addEventListener("click", ()=>{
+        if(checkbox.checked){
+          imgTxt.textContent = "(삭제)" + myTxt;
+          newImgs[index].style.display = "block";
+        }else{
+          imgTxt.textContent = myTxt;
+          newImgs[index].style.display = "none";
+        }
+      })
+    });
+    // const selectControl = (str) =>{
+      
+    // }
+
+
       const addForm = () => {        
           const inputList = document.getElementById('animated');
           const newInput = document.createElement('input');

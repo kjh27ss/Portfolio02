@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;200;300;400;500;600;700;800;900&display=swap">
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="skills">
+    <div class="container pagecontainer mt-5">
+            <h1 class="text-center">
+                 {{title}}
+            </h1>
+            <form name="portfolioform" id="form" 
+                      method="post" 
+                      action="/portfolio/edit"
+                      enctype="multipart/form-data"
+            >
+            <!-- loop -->
+            <ul class="list-group">              
+                <li class="list-group-item">
+                <div class="row">
+                    <div class="col-12 mt-3">
+                      <label class="d-block mx-1 my-2">
+                        스킬 이름
+                      </label>
+                      <input type="text" name="name" id="name" class="form-control" value="{{rs.name}}" />
+                    </div>
+                  </div>
+                  </li>
+
+                  <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-12 mt-3">                          
+                          <label class="d-block mx-1 my-2 form-label">
+                            스킬 퍼센트
+                          </label>
+                          <div class="d-flex rangebar-ruler">
+                            <div class="position-relative"><span>10%</span></div>
+                            <div class="position-relative"><span>20%</span></div>
+                            <div class="position-relative"><span>30%</span></div>
+                            <div class="position-relative"><span>40%</span></div>
+                            <div class="position-relative"><span>50%</span></div>
+                            <div class="position-relative"><span>60%</span></div>
+                            <div class="position-relative"><span>70%</span></div>
+                            <div class="position-relative"><span>80%</span></div>
+                            <div class="position-relative"><span>90%</span></div>
+                            <div class="position-relative"><span>100%</span></div>                           
+                          </div>
+                          <input type="range" name="value" id="content" class="form-range" step="5" value="{{rs.value}}"/>
+                        </div>
+                      </div>
+                      </li>
+                      
+                      <li class="list-group-item">
+                        <label class="d-block mx-1 my-2">
+                          이미지 업로드
+                        </label>
+                        <div class="row mb-3">
+                          <div class="col-2">
+                          <label>
+                            <input type="checkbox" value="1" name="imgchk" class="imgchk" />
+                          </label>
+                        </div>
+                        <div class="col-3 imgtxt">
+                            {{rs.orimg}}
+                        </div>
+                        <div class="col-7 img " id="myfiles">
+                            <input type="file" name="img" class="input_img form-control mb-3">
+                        </div>                        
+                        </div>
+                      </li>                  
+                
+                </ul>
+                <div class="btn-box d-flex justify-content-center my-5">
+                  <button type="reset" class="btn btn-warning mx-5 px-5">취소</button>
+                  <button type="submit" class="btn btn-primary mx-5 px-5">전송</button>
+                </div> 
+                <input type="hidden" name="imgname" value="{{rs.img}}"/>
+          </form>
+        </div>
+                
+   <script> 
+    const checkbox = document.querySelector(".imgchk");
+    const imgInput = document.querySelector(".input_img");
+    const imgtxt = document.querySelector(".imgtxt");
+    const imgtxtValue = imgtxt.textContent;
+    console.log(imgtxtValue);
+
+    checkbox.addEventListener("click", ()=>{
+      if(checkbox.checked){
+        imgtxt.textContent = "(삭제)" + imgtxtValue;
+        imgInput.style.display = "block";
+        // console.log("체크 함");
+      }else{
+        imgtxt.textContent = imgtxtValue;
+        imgInput.style.display = "none";
+        // console.log("체크 품")
+      }
+    });
+
+      const addForm = (n) => {
+        if(n == 1){
+          const inputList = document.getElementById('animated');
+          const newInput = document.createElement('input');
+          newInput.type = 'text';
+          newInput.name = 'animated';
+          newInput.classList.add('animated');
+          newInput.classList.add('form-control');
+          newInput.classList.add('mb-3');
+          inputList.appendChild(newInput);
+        }else{
+
+        }
+      }
+
+      const delForm  = (n) => {
+        if(n == 1){
+          const delInputs = document.getElementsByClassName('animated');
+          const maxInput = delInputs.length;   // input의 갯수
+          // console.log(maxInput);
+          if(maxInput > 1){
+            const lastInput = delInputs[maxInput-1]; 
+            lastInput.parentNode.removeChild(lastInput);
+          }
+        }else{
+          alert('더이상 삭제할 수 없습니다.');
+        }
+      }
+
+      const myFile = (n) => {
+        if(n == 1){
+          const fileList = document.getElementById('myfiles');
+          const newFile = document.createElement('file');
+          newFile.type = 'file';
+          newFile.name='img';
+          newFile.classList.add('img');
+          newFile.classList.add('form-control');
+          newFile.classList.add('mb-3');
+          fileList.appendChild(newFile);
+        }else{
+
+        }
+      }
+
+      const delFiles  = (n) => {
+        if(n == 1){
+          const delFiles = document.getElementsByClassName('img');
+          const maxInput = delFiles.length;   // input의 갯수
+          // console.log(maxInput);
+          if(maxInput > 1){
+            const lastInput = delFiles[maxInput-1]; 
+            lastInput.parentNode.removeChild(lastInput);
+          }
+        }else{
+          alert('더이상 삭제할 수 없습니다.');
+        }
+      }
+
+      document.getElementById('addInput').addEventListener('click', ()=>{
+        addForm(1);
+      });
+      document.getElementById('delInput').addEventListener('click', ()=>{
+        delForm(1);
+      });
+
+      document.getElementById('addFile').addEventListener('click', ()=>{
+        myFile(1);
+      });
+      document.getElementById('delFile').addEventListener('click', ()=>{
+        delFiles(1);
+      });
+    </script>
+</body>
+</html>

@@ -43,9 +43,17 @@
             </li>
             {% endfor %}                            
           </ul>
-        <!-- </a> -->
-        
+        <!-- </a> -->        
       </div>
     </div>
+    <script>
+      //삭제 물어보기
+       $('.del-skills').click(function(){
+          if(confirm('정말 삭제하시겠습니까?')){
+            return true;
+          }
+          return false;
+        });
+    </script>
 </body>
 </html>
