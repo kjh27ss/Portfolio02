@@ -4,6 +4,7 @@ const nunjucks = require('nunjucks');
 const fs = require('fs');
 const indexRouter = require('./routes');
 const connect = require('./schemas');
+const adminRouter = require('./routes/admin');
 const myinfoRouter = require('./routes/myinfo');
 const pageinfoRouter = require('./routes/pageinfo'); // 1
 const skillsRouter = require('./routes/skills');
@@ -38,23 +39,11 @@ app.use('/', indexRouter); // 라우터받기
 
 // myinfo 연결
 app.use('/myinfo', myinfoRouter);
+app.use('/admin', adminRouter);
 app.use('/pageinfo', pageinfoRouter); //2 
 app.use('/skills', skillsRouter);
 app.use('/portfolio', portfolioRouter);
 app.use('/timeline', timelineRouter);
-
-const upload = multer({
-    storage:multer.diskStorage({
-        destination:(req, file, done) =>{
-            done(null, 'img/');
-        },
-        filename:(req,file,done) => {
-            done(null, file.fieldname + '-' + Date.now())
-        }
-    })
-});
-
-// app.post('pageinfo/write')
 
 // 404 error, 500 error 처리
 app.use((req,res,next)=>{

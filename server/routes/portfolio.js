@@ -12,8 +12,8 @@ router.route('/list')
             show = req.query.show;
             let maxNum = 0;
             const row = await Portfolio.find({}).populate("category"); // 외래키 join
-            // console.log(row);
-            const rs = await Category.find().sort({'num':"desc"}); // asc,desc
+            console.log(row);
+            const rs = await Category.find().sort({"num":"desc"}); // asc,desc
             if(rs.length>0) maxNum = rs[0].num;
             res.render('portfolio', { row, rs, maxNum, title:"나의 포트폴리오" ,show:show});
         }catch(err){
@@ -66,9 +66,10 @@ router.route('/edit/:id')
      .get(async (request,result,next)=>{
         try{
             const id = request.params.id;
+            const rs = await Category.find().sort({"num":"desc"});
             const row = await Portfolio.find({_id:id});
             const res = row[0];
-            result.render("portfolio_update", {res,title:"포트폴리오 수정"});
+            result.render("portfolio_update", {res,rs,title:"포트폴리오 수정"});
         }catch(err){
             console.log(err);
             next(err);
@@ -121,7 +122,27 @@ router.route('/del/:id')
                  console.error(err);
                  next(err);
               }
-           });     
+           });  
+
+// router.route('/del')
+//    .post(async(req, res, next)=>{
+//          try{
+//             const id  = req.body.id;
+//             const img = req.body.img;
+//             // 파일 삭제
+//             if(fs.existsSync('./img/portfolio/'+img)){
+//                fs.removeSync('./img/portfolio/'+img);
+//             }
+//             // db 삭제
+//             const rs = await Portfolio.deleteOne({_id:id});
+//             console.log(rs);
+//             res.send('1');
+//             }catch(err){
+//                console.error(err);
+//                res.send('0');
+//                next(err);
+//             }
+//          });
 
 router.route('/category/write')    
     .post(async (req,res,next)=>{

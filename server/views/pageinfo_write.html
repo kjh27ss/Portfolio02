@@ -21,7 +21,7 @@
             <!-- loop -->
             <ul class="list-group">
               <li class="list-group-item">
-                  <div class="row">
+                  <div class="row mb-3">
                     <div class="col-6">
                       <label class="d-block mx-1 my-2">
                         페이지 제목
@@ -40,7 +40,7 @@
                       <label class="d-block mx-1 my-2">
                         페이지 타이틀
                       </label>
-                      <input type="text" name="title" id="title" class="form-control" value="{{rs.title}}"/>
+                      <input type="text" name="title" id="title" class="form-control"/>
                     </div>
                   </div>
                 </li>
@@ -50,41 +50,31 @@
                       <label class="d-block mx-1 my-2">
                         페이지 내용
                       </label>
-                      <textarea name="content" id="content" class="form-control" value="{{rs.content}}"></textarea>
+                      <textarea name="content" id="content" class="form-control" rows="5"></textarea>
                     </div>
                   </div>
                   </li>
 
                   <li class="list-group-item">
+                    <label class="d-block mx-1 my-2">
+                      배열 텍스트
+                    </label>
                     <div class="row">
-                        <div class="col-12 mt-3">
-                          <label class="d-block mx-1 my-2">
-                            배열텍스트
-                          </label>
-                          <!-- <input type="text" name="content" id="content" class="form-control" /> -->
-                        </div>
+                      <div class="col-12 mt-3 d-flex justify-content-end">
+                        <button type="button" class="btn btn-info me-3" id="addInput">폼추가</button>
+                        <button type="button" class="btn btn-danger" id="delInput">폼추가</button>
                       </div>
-                      </li>
-
-                  <li class="list-group-item">
-                    <div class="row">
-                        <div class="col-12 mt-3 d-flex justify-content-end">
-                          <button type="button" class="btn btn-info me-3" id="addInput">추가</button>
-                          <button type="button" class="btn btn-danger" id="delInput">폼 제거</button>
-                        </div>
-                        <div class="col-12 animated mt-3" id="animated">
-                          {% for row in rs.animated %}
-                          <input type="text" name="animated" class="form-control animated mb-3"/>
-                          {% endfor %}
-                        </div>
+                      <div class="col-12 mt-3" id="animated">
+                        <input type="text" name="animated" class="form-control animated mb-3">
+                      </div>
                     </div>
                   </li>
 
                   <li class="list-group-item">
-                    <div class="row mb-5">
                       <label class="d-block mx-1 my-2">
                         이미지업로드
                       </label>
+                      <div class="row mb-3">
                         <div class="col-12 mt-3 d-flex justify-content-end">
                           <button type="button" class="btn btn-info me-3" id="addFile">추가</button>
                           <button type="button" class="btn btn-danger" id="delFile">폼 제거</button>
@@ -92,13 +82,12 @@
                         <div class="col-12 img mt-3" id="myfiles">
                           <input type="file" name="img" class="form-control mb-3"/>
                         </div>
-                    </div>
-                  </li>
-                
+                      </div>
+                  </li>                
                 </ul>
                 <div class="btn-box d-flex justify-content-center my-5">
-                  <button type="reset" class="btn btn-warning mx-5 px-5">취소</button>
-                  <button type="submit" class="btn btn-primary mx-5 px-5">전송</button>
+                  <button type="reset" id="addFile" class="btn btn-warning mx-5 px-5">취소</button>
+                  <button type="submit" id="delFile" class="btn btn-primary mx-5 px-5">전송</button>
                 </div>              
           </form>
         </div>

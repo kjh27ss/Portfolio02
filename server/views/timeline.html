@@ -16,8 +16,7 @@
           <a href="./write" class="btn btn-success">데이터입력</a>
        </div>
        <div class="row">
-        <!-- loop -->
-          
+        <!-- loop -->          
               <ul class="list-group">
                 {% for rs in row %} 
                  <li class="list-group-item d-flex">
@@ -38,18 +37,46 @@
                      <div class="col-2 d-flex align-items-center">{{rs.wdate}}</div> 
 
                      <div class="col-2 d-flex justify-content-around align-items-center">
-                        <a href="./del/{{rs.id}}" class="btn btn-danger">삭제</a>
+                        <a href="#" data-id="{{rs.id}}" data-img="{{rs.img}}"  class="btn btn-danger remove">삭제</a>
                         <a href="./edit/{{rs.id}}" class="btn btn-warning">수정</a>
                      </div>
                  </li>
                  {% endfor %}
               </ul>
-
         <!-- /loop -->   
        </div>
        <div class="d-flex justify-content-end my-5">
           <a href="./write" class="btn btn-success">데이터입력</a>
        </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js" integrity="sha512-WrdC3CE9vf1nBf58JHepuWT4x24uTacky9fuzw2g/3L9JkihgwZ6Cfv+JGTtNyosOhEmttMtEZ6H3qJWfI7gIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      const rm = document.querySelectorAll(".remove");
+      rm.forEach((el, index) => {        
+        el.addEventListener("click", function(e){
+          e.preventDefault();
+          // eventlistener 일어난 다음 작성
+          const id = el.dataset.id;
+          const img = el.dataset.img;   
+          if(confirm("정말 삭제하시겠습니까?")){
+            axios.post("/timeline/del",{ // axios로 링크 보내줌
+              id : id,
+              img : img
+            })
+            .then(function(res){
+              console.log(res);
+              if(res.data == 1){
+                alert("삭제되었습니다.");
+                document.location.reload(true); // true : 강제 새로고침
+              }
+            })
+            .catch(function(error){
+              console.log(error);
+            })
+          }
+        });
+      });      
+    </script>
 </body>
 </html>

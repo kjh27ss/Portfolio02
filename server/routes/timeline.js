@@ -22,7 +22,6 @@ router.route('/write')
     })
     .post( upload.single("img"), async(req, res, next)=>{
         try{
-        //    fs.moveSync('./img/'+req.file.filename, './img/timeline/'+req.file.filename);
            var fileupload = '';
            if(req.file) { 
               fs.moveSync('./img/'+req.file.filename, './img/timeline/'+req.file.filename);
@@ -46,21 +45,78 @@ router.route('/write')
         }
     });
 
-router.route('/update/:id')
-    .post(async(req,res,next)=>{
-        try{
-            const timeline = await Timeline.updateOne({
-                jobtitle:req.body.jobtitle,
-                where:req.body.where,
-                wdata,
-                fileupload   
-            })
+
+router.route('/edit/:id') 
+    .get(async(req, res, next)=>{
+       try{
+          const { id } = req.params;
+          const row = await Timeline.find({_id: id});
+          const rs = row[0];
+          res.render('timeline_update', { rs, title: '타임라인 수정'});
+       }catch(err){
+          console.error(err);
+          next(err);
+       }
+    });
+
+router.route("/edit")      
+    .post( upload.single("img"), async(req, res, next)=>{
+       const { jobtitle, where, wdate } = req.body;
+       console.log(jobtitle, where, wdate);
+       try{
+          let fileupload = {};
+          if(req.body.imgchk == 1){
+            //기존 파일 삭제
+            fs.removeSync('./img/timeline/'+req.file.filename);
+            //업로드된 파일 이동
+            if(req.file){ 
+              fs.moveSync('./img/'+req.file.filename, './img/timeline/'+req.file.filename);
+              //새로운 파일을 등록
+              fileupload = {
+                 orimg : req.file.originalname,
+                 img: req.file.filename
+              }
+           }else{
+              fileupload = {
+                 orimg : "",
+                 img: ""
+              }                 
+           }   
+            const timelines = {
+              jobtitle: jobtitle,
+              where: where,
+              wdate: wdate
+            }
+            const timeline = await Timeline.updateOne({_id: req.body.id }, {
+                ...timelines,
+                ...fileupload
+            });
+            console.log(timeline);
             res.redirect('/timeline/list');
-        }catch(err){
-            console.log(err);
-            next(err);
-        }
+          }  
+       }catch(err){
+          console.error(err);
+          next(err);
+       }
     })
 
-    // .route('/delete/:id')
+router.route('/del')
+    .post(async(req, res, next)=>{
+          try{
+             const id  = req.body.id;
+             const img = req.body.img;
+             // 파일 삭제
+             if(img && fs.existsSync('./img/timeline/'+img)){
+                fs.removeSync('./img/timeline/'+img);
+             }
+             // db 삭제
+             const rs = await Timeline.deleteOne({_id:id});
+             console.log(rs);
+             res.send('1');
+             }catch(err){
+                console.error(err);
+                res.send('0');
+                next(err);
+             }
+          });
     module.exports = router;

@@ -59,8 +59,9 @@
                      <p>{{rss.content}}</p>
                      <p class="link"><a href="{{rss.link}}">{{rss.link}}</a></p>
                      <div class="d-flex justify-content-around my-3">
+                        <a href="#" data-del="{{rss.id}}" data-img="{{rss.img}}" class="btn btn-danger remove">삭제</a>
+                        <!-- <a href="#" data-del="{{rss.id}}" data-img="{{rss.img}}" class="btn btn-danger remove">삭제</a>                         -->
                         <a href="./edit/{{rss.id}}" class="btn btn-warning">수정</a>
-                        <a href="./del/{{rss.id}}" data-del="{{rss.id}}" class="btn btn-danger">삭제</a>
                      </div>
                  </div>
               </div>
@@ -104,6 +105,8 @@
     </div>
     <script src="//code.jquery.com/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-bootstrap/0.5pre/js/jquery-ui-1.9.2.custom.min.js" integrity="sha512-/j/PhXKFsf5Gc8eMuXoUn1tBjDJthhC5kBpOBPlNyANs9vxbJ8DM/gsciQ4ykymnUtHuk0yedLnlpg7DPmjZZg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js" integrity="sha512-WrdC3CE9vf1nBf58JHepuWT4x24uTacky9fuzw2g/3L9JkihgwZ6Cfv+JGTtNyosOhEmttMtEZ6H3qJWfI7gIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
        $(function(){
         //show에 값이 있으면 
@@ -147,14 +150,8 @@
           $('.popup-category').html(popup_update);
           $("#sortable").sortable();
        });
-
-       // 삭제 물어보기
-      //  $('.del-category').click(function(){
-      //     if(!confirm('정말 삭제하시겠습니까?')){
-      //       return false;
-      //     }
-      //   });
-
+       
+       // category update
        $(document).on('click', '.cate-update', function(){
           const data = $("#category-update-form").serialize();
           $.ajax({
@@ -176,6 +173,7 @@
           })
        });
 
+       // category write
        $(document).on('click', '.cate-write', function(){
            const category = $("#category").val();
            const num = Number($("#num").val())+1;
@@ -212,28 +210,29 @@
            })
        });
 
-       $(document).on('click' , '.portfolio-del', function(e){
-         e.preventDefault();
-         // const del = $(this).data("del");
-         if(confirm("정말 삭제하시겠습니까?")){
-            const del = $(this).data("del");
-            $.ajax({
-               url:"/portfolio/del",
-               type:"post",
-               data:{id:id},
-               success:function(rs){
-                  const res = parseInt(rs);
-                  if(res >0){
-                     alert("삭제되었습니다.");
-                     location.href="/portfolio/list?show=show";
-                  }else{
-                     alert("문제 발생");
-                  }
-               }
-            })
-         }
-       })
-
+      //   $(document).on('click' , '.remove', function(e){
+      //    e.preventDefault();
+      //    const id = e.target.dataset.id;
+      //    console.log(id);
+      //    if(confirm("정말 삭제하시겠습니까?")){         
+      //       $.ajax({
+      //          url:"/portfolio/del",
+      //          type:"post",
+      //          data:{_id:id},
+      //          success:function(rs){
+      //             const res = parseInt(rs);
+      //             if(res > 0){
+      //                alert("삭제되었습니다.");
+      //                location.href="/portfolio/list?show=show";
+      //             }else{
+      //                alert("문제 발생");
+      //             }
+      //          }
+      //       })
+      //    }
+      //  })
+       
+       // category del
        $(document).on('click' , '.del-category', function(e){
            e.preventDefault();
            if(confirm("정말 삭제하시겠습니까?")){
@@ -255,9 +254,37 @@
            })
          }
        })
+       });
 
+       // port 삭제
+      const rm = document.querySelectorAll(".remove");
+      rm.forEach((el, index) => {        
+        el.addEventListener("click", function(e){
+          e.preventDefault();
+          // eventlistener 일어난 다음 작성
+          const id = el.dataset.id;
+          const img = el.dataset.img;   
+          console.log(id);
+          if(confirm("정말 삭제하시겠습니까?")){
+            axios.post("/portfolio/del",{ // axios로 링크 보내줌
+              id : id,
+              img : img
+            })
+            .then(function(res){
+              console.log(res);
+              if(res.data == 1){
+                alert("삭제되었습니다.");
+                document.location.reload(true); // true : 강제 새로고침
+              }
+            })
+            .catch(function(error){
+              console.log(error);
+            })
+          }
+        });
+      });      
+      
 
-       })
     </script>
 </body>
 </html>

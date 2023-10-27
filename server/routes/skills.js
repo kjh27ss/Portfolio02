@@ -60,48 +60,63 @@ router.route('/edit/:id')
 
 router.route('/edit')
       .post( upload.single("img"), async(req, res, next)=>{
-         const { name, value, id } = req.body;
+         const { name, value, id} = req.body;
          console.log(name, value, id);
-
-         try{      
-            let fileupload = {};
-            if(req.body.imgchk == 1){
-               //기존의 파일을 삭제
-               fs.removeSync('./img/skills/'+req.body.imgname);
-               //새로 업로드된 파일 이동
-               fs.moveSync('./img/'+req.file.filename, './img/skills/'+req.file.filename);
-               //새로운 파일을 등록
-               fileupload = {
-                  orimg : req.file.originalname,
-                  img: req.file.filename
+         try{
+            //  const id = req.params.id;      
+             let fileupload = {};
+             if(req.body.imgchk == 1){
+                //기존의 파일을 삭제
+                fs.removeSync('./img/skills/'+req.body.imgname);
+                if(req.file){
+                  //새로 업로드된 파일 이동
+                  fs.moveSync('./img/'+req.file.filename, './img/skills/'+req.file.filename);
+                  //새로운 파일을 등록
+                  fileupload = {
+                     orimg : req.file.originalname,
+                     img: req.file.filename
+                  }
+               }else{
+                  fileupload = {
+                  orimg : "",
+                  img : ""               
                }
-            }
+             }
             const skill = {
                name: req.body.name,
                value: req.body.value,
             } 
-            const skills = await Skills.updateOne({_id: req.body.id}, {
+            const skills = await Skills.updateOne({_id:req.body.id}, {
                ...skill,
                ...fileupload
             });
             console.log(skills);
             res.redirect("/skills/list");
+            }
          }catch(err){
             console.error(err);
             next(err);
          }
       });
-router.route('/del/:id')
-.get(async(req, res, next)=>{
-      try{
-         const { id } = req.params;
-         const row = await Skills.deleteOne({_id: id});
-         const rs = row[0];
-         res.render('skills', { rs });
-         }catch(err){
-            console.error(err);
-            next(err);
-         }
-      });
+
+router.route('/del')
+   .post(async(req, res, next)=>{
+         try{
+            const id  = req.body.id;
+            const img = req.body.img;
+            // 파일 삭제
+            if(fs.existsSync('./img/skills/'+img)){
+               fs.removeSync('./img/skills/'+img);
+            }
+            // db 삭제
+            const rs = await Skills.deleteOne({_id:id});
+            console.log(rs);
+            res.send('1');
+            }catch(err){
+               console.error(err);
+               res.send('0');
+               next(err);
+            }
+         });
 
 module.exports = router;

@@ -2,14 +2,10 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 const portfolioSchema = new Schema({ 
-    category:{
-        type:Schema.Types.ObjectId,
-        ref:'Category'
+    category: {
+        type: Schema.Types.ObjectId,
+        ref: 'Category'
     },
-    // category:{
-    //     type:String,
-    //     required:true
-    // },
     title:{
         type:String,
         required:true,
